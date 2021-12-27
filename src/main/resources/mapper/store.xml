@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.happyhouse.model.mapper.StoreInfoMapper">
+	
+	<!-- <select id="getHouseDealList" parameterType="string" resultType="houseDealDto">
+		select h.aptCode, h.aptName, h.buildyear, h.dongCode, h.dongName, h.jibun, h.lat, h.lng, si.sidoname, gu.gugunname,
+				(select dealAmount from housedeal where aptCode = h.aptCode and no = (select max(no) from housedeal where aptCode = h.aptCode)) recentPrice
+		from houseinfo h
+		left join sidocode si
+		on left(h.dongcode,2) = left(si.sidocode,2)
+		left join guguncode gu
+		on left(h.dongcode,5) = left(gu.guguncode,5)
+		where dongCode = #{dong} 
+		order by aptName
+	</select> -->
+	
+	<!-- <select id="getHouseDealAptList" parameterType="map" resultType="houseDealDto">
+		select d.aptCode, d.dealAmount, d.dealYear, d.dealMonth, d.dealDay, d.area, h.dongName, h.aptName
+		from housedeal d
+		join houseinfo h
+		on d.aptCode = h.aptCode
+		where h.dongCode = #{dong}
+		and h.aptName = #{aptName}
+		order by dealAmount
+	</select> -->
+	
+	<select id="getLargeCategory" resultType="categoryDto">
+		select largeCategoryCode, largeCategoryName
+		from largecategorycode
+		order by largeCategoryCode
+	</select>
+	
+	<select id="getMediumCategory" parameterType="string" resultType="categoryDto">
+		select mediumCategoryCode, mediumCategoryName
+		from mediumcategorycode
+		where left(mediumCategoryCode, 1) = #{largeCategory}
+		order by mediumCategoryCode
+	</select>
+	
+	<select id="getSmallCategory" parameterType="string" resultType="categoryDto">
+		select smallCategoryCode, smallCategoryName
+		from smallcategorycode
+		where left(smallCategoryCode, 3) = #{mediumCategory}
+		order by smallCategoryCode
+	</select>
+	
+	<select id="getStoreInfo" parameterType="map" resultType="storeInfoDto">
+		select * 
+		from store
+		where left(smallCategoryCode, 3) = #{categoryCode}
+		and left(dongCode, 5) = #{gugun} 
+		order by rand()
+		limit 0, 10
+	</select>
+	
+	<select id="getIntStoreInfo" parameterType="string" resultType="storeInfoDto">
+		select * 
+		from store s
+		left join sidocode si
+		on left(s.dongCode, 2) = left(si.sidocode,2)
+		where dongName = #{dong}
+		order by rand()
+		limit 0, 10
+	</select>
+	
+	<select id="getSearchStoreInfo" parameterType="map" resultType="storeInfoDto">
+		select * 
+		from store s
+		left join sidocode si
+		on left(s.dongCode, 2) = left(si.sidocode,2)
+		where dongCode = #{dong}
+		and smallCategoryCode = #{small}
+		order by rand()
+		limit 0, 10
+		
+	</select>
+	
+</mapper>

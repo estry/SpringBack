@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.happyhouse.model.mapper.QNAMapper">
+	<!-- 질문 목록 조회 -->
+	<select id="questionList" resultType="questionDto">
+		select qno,author, title, content,
+		case when date_format(regtime, '%Y%m%d') = date_format(now(), '%Y%m%d')
+				then date_format(regtime, '%y년 %m월 %d일')
+				else date_format(regtime, '%y.%m.%d')
+				end regtime 
+		from question
+	</select>
+	
+	<select id="getQuestion" parameterType="int" resultType="questionDto">
+		select *
+		from question
+		where qno = #{qno}
+	</select>
+	
+	
+	<!-- 질문 등록 -->
+	<insert id="createQuestion" parameterType="questionDto">
+		insert into question (
+			qno, author, title, content, regtime
+		) values (
+			#{qno}, #{author}, #{title}, #{content}, now()
+		)
+	</insert>
+	
+	<update id="modifyQuestion" parameterType="questionDto">
+		update question
+		set content = #{content},
+			title = #{title}
+			where qno = #{qno} and author = #{author}
+	</update>
+	
+	<!-- 질문 삭제 -->
+	<delete id="deleteQuestion" parameterType="int">
+		<![CDATA[
+		delete
+		from question
+		where qno = #{qno}
+		]]>
+	</delete>
+	<!-- 답변 등록 -->
+	<insert id="createAnswer" parameterType="answerDto">
+			insert into answer (
+				ano, author, content, regtime, qno
+			) values (
+				#{ano}, #{author}, #{content}, now(), #{qno}
+			)
+	</insert>
+	<!-- 답변 목록 조회 -->
+	<select id="answerList" parameterType="int" resultType="answerDto">
+		select *
+		from answer
+		where qno = #{qno}
+	</select>
+	
+</mapper>

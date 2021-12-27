@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.happyhouse.model.mapper.MemberMapper">
+
+	<select id="idCheck" parameterType="string" resultType="int">
+		select count(userid)
+		from member
+		where userid = #{userid}
+	</select>
+
+	<insert id="registerMember" parameterType="MemberDto">
+		insert into member (userid, username, userpwd, email, joindate, state, interest)
+		values (#{userId}, #{userName}, #{userPwd}, #{email}, now(),1,#{interest})
+	</insert>
+	
+	<select id="login" parameterType="memberDto" resultType="memberDto">
+		select username, userid, email
+		from member
+		where userid = #{userid} and userpwd = #{userpwd}
+	</select>
+	
+	<select id="userInfo" parameterType="String" resultType="memberDto">
+		select userid, username, userpwd, email,state, interest,
+		case when date_format(joindate, '%Y%m%d') = date_format(now(), '%Y%m%d')
+				then date_format(joindate, '%y년 %m월 %d일')
+				else date_format(joindate, '%y.%m.%d')
+				end joindate
+		from member
+		where userid = #{userid}
+	</select>
+	
+	<delete id="deleteMember" parameterType="String">
+		delete from member
+		where userid = #{userid}
+	</delete>
+	
+		<update id="updateMember" parameterType="MemberDto">
+		update member
+		<trim prefix="set" suffixOverrides=",">
+			<if test="email != null">email = #{email},</if>
+			<if test="interest != null">interest = #{interest},</if>
+		</trim>
+		where userid = #{userId}
+	</update>
+<!-- <select id="login" parameterType="map" resultType="MemberDto">
+		select username, userid, email,userpwd,interest
+		from member
+		where userid = #{userId} and userpwd = #{userPwd}
+	</select>
+	
+	<select id="listMember" resultType="memberDto">
+		select userid, userpwd, username, email, date_format(joindate, '%y.%m.%d') joindate
+		from member
+		order by joindate desc;
+	</select>
+	
+	<select id="getMember" parameterType="String" resultType="memberdto">
+		select userid, userpwd, username, email, date_format(joindate, '%y.%m.%d') joindate,interest
+		from member
+		where userid = #{userid}
+	</select>
+	
+
+	
+	
+	<select id="getMemberInterest" parameterType="String" resultType="memberdto">
+		select interest
+		from member
+		where userid = #{userid}
+	</select> -->
+	
+</mapper>
