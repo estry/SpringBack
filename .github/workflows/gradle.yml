@@ -23,6 +23,6 @@ jobs:
       run: chmod +x gradlew
       
     - name: Build with Gradle
-      run: ./gradlew build -Pjasypt.encryptor.password=testkey
+      run: ./gradlew build -Pjasypt.encryptor.password=%{{secrets.PRO_SECRET_KEY}}
       
       
