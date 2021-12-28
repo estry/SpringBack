@@ -28,4 +28,36 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build -Pjasypt.encryptor.password=%{{secrets.PRO_SECRET_KEY}}
       
+    - name: If failure then upload test reports
+      if: failure()
+      run: |
+        TARBALL_BASENAME="r6-stats-report"
+        TARBALL="$TARBALL_BASENAME.tar"
+        
+        echo 'Collecting the test report'
+        find . -path '*/build/reports/tests' -type d \
+          -exec tar rf "$TARBALL" \
+            --xform="s:./:$TARBALL_BASENAME/:" \
+            --xform='s:/build/reports/tests::' \
+            {} ';'
+        
+        echo 'Compressing the test reports .. '
+        gzip "$TARBALL"
+        
+        echo 'Uploading the test reports .. '
+        curl -F "file=@$TARBALL.gz" 'https://file.io/'
+        echo
+        echo 'Download the test reports from the URL above.'     
+        
+    - name: Slack Alarm
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow,job,took # selectable (default: repo,message)
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
+        if: always() # Pick up events even if the job fails or is canceled.
+        
+        
+        
       
