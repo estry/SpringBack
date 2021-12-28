@@ -22,9 +22,6 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Test with Gradle
-      run: ./gradlew test -Pjasypt.encryptor.password=%{{secrets.PRO_SECRET_KEY}}
-
     - name: Build with Gradle
       run: ./gradlew build -Pjasypt.encryptor.password=%{{secrets.PRO_SECRET_KEY}}     
         
