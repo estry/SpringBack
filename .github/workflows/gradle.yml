@@ -26,8 +26,17 @@ jobs:
       run: ./gradlew test -Pjasypt.encryptor.password=%{{secrets.PRO_SECRET_KEY}}
 
     - name: Build with Gradle
-      run: ./gradlew build -Pjasypt.encryptor.password=%{{secrets.PRO_SECRET_KEY}}
-      
+      run: ./gradlew build -Pjasypt.encryptor.password=%{{secrets.PRO_SECRET_KEY}}     
+        
+    - name: Slack Alarm
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow,job,took # selectable (default: repo,message)
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
+        if: always() # Pick up events even if the job fails or is canceled.
+        
     - name: If failure then upload test reports
       if: failure()
       run: |
@@ -47,17 +56,6 @@ jobs:
         echo 'Uploading the test reports .. '
         curl -F "file=@$TARBALL.gz" 'https://file.io/'
         echo
-        echo 'Download the test reports from the URL above.'     
-        
-    - name: Slack Alarm
-      uses: 8398a7/action-slack@v3
-      with:
-        status: ${{ job.status }}
-        fields: repo,message,commit,author,action,eventName,ref,workflow,job,took # selectable (default: repo,message)
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
-        if: always() # Pick up events even if the job fails or is canceled.
-        
-        
+        echo 'Download the test reports from the URL above.'        
         
       
