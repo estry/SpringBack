@@ -42,8 +42,7 @@ public class MemberController {
 		return json.toString();
 	}
 	
-	@PostMapping("/register")
-	public ResponseEntity register(@RequestBody MemberDto memberDto) throws Exception {
+ 	public ResponseEntity register(@RequestBody MemberDto memberDto) throws Exception {
 		System.out.println(memberDto);
 		memberService.registerMember(memberDto);
 		return new ResponseEntity(HttpStatus.OK);
